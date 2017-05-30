@@ -1,0 +1,40 @@
+﻿<Window x:Class="FilenameDelonger.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FilenameDelonger"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="161" Width="525" ResizeMode="CanMinimize">
+    <Grid Margin="10,10,10,10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="20" />
+        </Grid.RowDefinitions>
+        <TextBox Name="FolderScan" Grid.Column="0" Grid.Row="0" GotFocus="FolderScan_GotFocus" LostFocus="FolderScan_LostFocus" Text="Select a folder to fix." FontStyle="Italic" Foreground="Gray" />
+        <TextBox Name="Output" Grid.Column="0" Grid.Row="2" GotFocus="FolderScan_GotFocus" LostFocus="Output_LostFocus"  Text="Select an output location." FontStyle="Italic" Foreground="Gray" />
+        <Button Name="BrowseScan" Grid.Column="1" Grid.Row="0" Content="Browse" Click="BrowseScan_Click"/>
+        <Button Name="BrowseOutput" Grid.Column="1" Grid.Row="2" Content="Browse" Click="BrowseOutput_Click"/>
+        <Button Name="FixButton" Grid.Column="1" Grid.Row="4" Content="Fix"/>
+        <Grid Grid.Column="0" Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="125" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="125" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+            <Button Name="bttnAbout" Content="About" Grid.Column="0" />
+            <Button Name="bttnQuit" Content="Quit" Grid.Column="2" Click="bttnQuit_Click" />
+        </Grid>
+    </Grid>
+</Window>
