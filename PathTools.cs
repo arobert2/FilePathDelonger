@@ -136,7 +136,6 @@ namespace FilePathDelonger
         /// <returns>string modified to not match</returns>
         private static string EnforceNoMatch(this string path, string outpath)
         {
-            FileAttributes fa = File.GetAttributes(path);                               //get file attributes
             string checkfsobjname = Path.GetFileNameWithoutExtension(path);             //get File System object name
             string checkfsext = Path.GetExtension(path);                                //get File System object extension
             string checkfspath = Path.GetDirectoryName(path);                           //get File System object directory path  
