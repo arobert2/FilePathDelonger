@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FilenameDelonger
+namespace FilePathDelonger
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -76,6 +77,34 @@ namespace FilenameDelonger
         private void bttnQuit_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void FixButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Directory.Exists(FolderScan.Text))
+            {
+                if (Directory.Exists(Output.Text))
+                {
+                    //Build the file tree
+                    FileTree ft = PathTools.BuildTree(FolderScan.Text);
+                    //Check for length and mark as needed
+                    ft = PathTools.MarkCuts(ft, Output.Text, "");
+                    //Move files that are marked.
+                    PathTools.MoveFiles(ft);
+                }
+                else
+                    MessageBox.Show("Path " + Output.Text + " does not exist.", "Folder not found!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+                MessageBox.Show("Path " + FolderScan.Text + " does not exist.", "Folder not found!", MessageBoxButton.OK, MessageBoxImage.Error);
+                
+        }
+
+        private void bttnAbout_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Author: Allen Roberts\n\n" +
+                "This program may cause data loss. Use at your own risk.\n\n" +
+                "This program is designed to move files and folders that exceed the Windows Explorer character limit to a specified location.");
         }
     }
 }

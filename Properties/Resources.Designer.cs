@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FilenameDelonger.Properties
+namespace FilePathDelonger.Properties
 {
 
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Collections;
 
-namespace FilenameDelonger
+namespace FilePathDelonger
 {
     public class PathTools
     {
@@ -60,26 +60,30 @@ namespace FilenameDelonger
         /// </summary>
         /// <param name="ft">FileTree</param>
         /// <param name="path">Path to check</param>
-        public FileTree MarkCuts(FileTree ft, string path, string lastcut, int charlimit)
+        public static FileTree MarkCuts(FileTree ft, string pathto, string lastcut)
         {
-            string lc = lastcut;
+            int charlimit = 260 - pathto.Length;    //maximum path size.
+            string lc = lastcut;    //Last cut for determining where to cut nust (path length - lastcutlength - destinationlength = maximum path size)
             FileTree newTree = new FileTree() { Path = ft.Path, Directory = ft.Directory, Files = ft.Files };   //Create a new tree that is identical to the previous except no child directores.
 
             //If path is greater than charlimit
-            if(path.Substring(lc.Length - 1).Length > charlimit)
+            if(ft.Path.Substring(lc.Length - 1).Length > charlimit)
             {
-                //Mark 
+                //Mark the tree as a cut.
                 newTree.AtLimit = true;
-                lc = lastcut;
+                //update last cut with this path
+                lc = ft.Path;
             }
 
+            //Check sub directories for cut mark.
             foreach(FileTree f in ft.Directories)
             {
-                FileTree subtree = MarkCuts(f, f.Path, lc, charlimit);
-                if(subtree != null)
-                    newTree.Directories.Add(subtree);
+                //Run method again with subtree of provided tree.
+                FileTree subtree = MarkCuts(f, pathto, lc);
+                //update newly created tree subdirectories with new cutmarked tree.
+                newTree.Directories.Add(subtree);
             }
-
+            //return updated tree.
             return newTree;
         }
         /// <summary>
@@ -87,19 +91,21 @@ namespace FilenameDelonger
         /// </summary>
         /// <param name="ft">Root FileTree</param>
         /// <param name="path">Path to move files to.</param>
-        public void MoveFiles(FileTree ft, string path = @"C:\")
+        public static void MoveFiles(FileTree ft, string path = @"C:\")
         {
+            // Go to end of tree.
             foreach (FileTree f in ft.Directories)
                 MoveFiles(f, path);
 
+            // check filename length
             foreach(string f in ft.Files)
-                if(f.Length > 150)
+                if(f.Length >= 260)
                 {
                     File.Move(f, path);
                     LogMove(path + @"\FileLog.txt", Path.GetFileName(f) + " was moved from " + ft.Path);
                 }
 
-
+            // Check folder name length
             if(ft.AtLimit)
             {
                 Directory.Move(ft.Path, path);
@@ -107,7 +113,7 @@ namespace FilenameDelonger
             }
         }
 
-        private void LogMove(string path, string text)
+        private static void LogMove(string path, string text)
         {
             using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate))
             {

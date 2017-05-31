@@ -55,7 +55,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FilenameDelonger\FilenameDelonger.csproj">
+    <ProjectReference Include="..\FilenameDelonger.csproj">
       <Project>{235ab818-268b-4601-a5c9-76b3ab9048c5}</Project>
       <Name>FilenameDelonger</Name>
     </ProjectReference>
