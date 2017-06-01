@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTime", "TestTime\TestTime.csproj", "{33671B98-039E-4002-AC55-E81248B8E79B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilenameDelonger", "FilenameDelonger.csproj", "{235AB818-268B-4601-A5C9-76B3AB9048C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilePathDelonger", "FilePathDelonger.csproj", "{235AB818-268B-4601-A5C9-76B3AB9048C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
