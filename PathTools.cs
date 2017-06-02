@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Delimon.Win32.IO;
 using System.Collections;
+using System.Threading;
 
 namespace FilePathDelonger
 {
@@ -26,7 +27,7 @@ namespace FilePathDelonger
                 dir = Directory.GetDirectories(path);                   //Get child folders
                 DirectoryTree.Files.AddRange(Directory.GetFiles(path)); //Get child files             
             }
-            catch(UnauthorizedAccessException)
+            catch(UnauthorizedAccessException uae)
             {
                 return null;                                            //If not possible return null.
             }
@@ -62,9 +63,9 @@ namespace FilePathDelonger
         /// <param name="path">Path to check</param>
         public static FileTree MarkCuts(FileTree ft, string pathto, string lastcut)
         {
-            int charlimit = 260 - pathto.Length;    //maximum path size.
-            string lc = lastcut;                    //Last cut for determining where to cut nust (path length - lastcutlength - destinationlength = maximum path size)
-            FileTree newTree = new FileTree()       //Create a new tree that is identical to the previous except no child directores.
+            int charlimit = 240 - pathto.Length;                    //maximum path size.
+            string lc = lastcut;                                    //Last cut for determining where to cut nust (path length - lastcutlength - destinationlength = maximum path size)
+            FileTree newTree = new FileTree()                       //Create a new tree that is identical to the previous except no child directores.
             {
                 Path = ft.Path,
                 Directory = ft.Directory,
@@ -73,13 +74,13 @@ namespace FilePathDelonger
             //If path is greater than charlimit
             if(ft.Path.Length - lc.Length > charlimit)
             {
-                newTree.AtLimit = true;         //Mark the tree as a cut.
-                lc = ft.Path;                   //update last cut with this path
+                newTree.AtLimit = true;                             //Mark the tree as a cut.
+                lc = ft.Path;                                       //update last cut with this path
             }
             //Check sub directories for cut mark.
             foreach(FileTree f in ft.Directories)
                 newTree.Directories.Add(MarkCuts(f, pathto, lc));   //Run method against subtrees, add result to newTree sub directory (FileTree.Directories property)            
-            return newTree;     //return updated tree.
+            return newTree;                                         //return updated tree.
         }
         /// <summary>
         /// Move files and folders that exceed limit
@@ -88,15 +89,15 @@ namespace FilePathDelonger
         /// <param name="path">Path to move files to.</param>
         public static void MoveFiles(FileTree ft, string path = @"C:\")
         {          
-            foreach (FileTree f in ft.Directories)      // Go to end of branch before continuing.
-                MoveFiles(f, path);
+            foreach (FileTree f in ft.Directories)      //Go to end of branch before continuing.
+                MoveFiles(f, path);                     //restart loop
 
             foreach (string f in ft.Files)              //look through files
-                if (f.Length - path.Length >= 255)      //Check to see if their path exceeds the limit
+                if (f.Length - path.Length >= 240)      //Check to see if their path exceeds the limit
                     Move(f, path);                      //Move file
 
-            if (ft.AtLimit)             //If marked for cut
-                Move(ft.Path, path);    //Move folder               
+            if (ft.AtLimit)                             //If marked for cut
+                Move(ft.Path, path);                    //Move folder               
         }
         /// <summary>
         /// Log information to a location
@@ -105,10 +106,14 @@ namespace FilePathDelonger
         /// <param name="text">text to log</param>
         private static void LogMove(string path, string text)
         {
-            using (System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.OpenOrCreate))
+            if (!File.Exists(path))     //If the log file doesn't exist
+                File.Create(path);      //Create a new log file
+
+            using (System.IO.StreamWriter sw = new System.IO.StreamWriter(path, true))  //create a new StreamWriter
             {
-                System.IO.StreamWriter sw = new System.IO.StreamWriter(fs);
-                sw.WriteLine(text);
+                string write = "[".AppendTimeStamp() + "] " + text;                     //Add time stamp to log entry.
+                sw.WriteLine(write);                                                    //Write log
+                sw.Close();                                                             //Close file
             }               
         }
         /// <summary>
@@ -118,12 +123,12 @@ namespace FilePathDelonger
         /// <param name="outputpath">Where you want to move it.</param>
         public static void Move(string inputpath, string outputpath)
         {
-            string inp = inputpath.EnforceNoMatch(outputpath);          //adds a timestamp if the file or folder already exists at the desired move path.
-            string cpobj = Path.GetFileName(inp);                       //FileSystem object name without path.
-            string movefrom = Path.GetDirectoryName(inputpath);         //Path where FileSystem object comes from
+            string inp = inputpath.EnforceNoMatch(outputpath);                                          //adds a timestamp if the file or folder already exists at the desired move path.
+            string cpobj = Path.GetFileName(inp);                                                       //FileSystem object name without path.
+            string movefrom = Path.GetDirectoryName(inputpath);                                         //Path where FileSystem object comes from
 
-            Directory.Move(inputpath, outputpath.CapPath() + cpobj);                                   //Move the file/folder to the specified location
-            LogMove(outputpath.CapPath() + "FolderLog.txt", cpobj + " was moved from " + movefrom);    //Log the move 
+            Directory.Move(inputpath, outputpath.CapPath() + cpobj);                                    //Move the file/folder to the specified location
+            LogMove(outputpath.CapPath() + "FolderLog.txt", cpobj + " was moved from " + movefrom);     //Log the move 
         }
 
 #region Extension Methods
@@ -142,18 +147,20 @@ namespace FilePathDelonger
             bool fileexists = File.Exists(outpath.CapPath() + checkfsobjname);          //check to see if a file exists
             bool folderexists = Directory.Exists(outpath.CapPath() + checkfsobjname);   //check to see if folder exists
 
+            //If the file doesn't exist just return the original file name.
             if (!fileexists || !folderexists)
-                return path;
+                return path;                                                            //return original path
 
+            //Check to see if this file has an extension.
             if (checkfsobjname.Contains("."))
             {
-                checkfsobjnamenoext = Path.GetFileNameWithoutExtension(checkfsobjname);
-                checkfsext = Path.GetExtension(checkfsobjname);
+                checkfsobjnamenoext = Path.GetFileNameWithoutExtension(checkfsobjname); //Get filename without an extension
+                checkfsext = Path.GetExtension(checkfsobjname);                         //Get filename extension
             }
             else
-                checkfsobjnamenoext = checkfsobjname;
+                checkfsobjnamenoext = checkfsobjname;                                   //If no extension, just make noextension variable = name.
 
-            return checkfspath + checkfsobjnamenoext.AppendTimeStamp() + checkfsext;      //return timestamped path                                                                //return original path
+            return checkfspath.CapPath() + checkfsobjnamenoext.AppendTimeStamp() + checkfsext;    //return timestamped path                                                                
         }
         /// <summary>
         /// Appends a Time Stamp on a string if needed.
@@ -162,7 +169,7 @@ namespace FilePathDelonger
         /// <returns>Modified string</returns>
         private static string AppendTimeStamp(this string st)
         {
-            return st + DateTime.Now.ToString("yyyyMMddHHmmssfff");
+            return st + DateTime.Now.ToString("yyyyMMddHHmmssfff");     //Add a timestamp to the folder
         }
         /// <summary>
         /// Adds a \ on the end of a string if needed.
@@ -171,19 +178,34 @@ namespace FilePathDelonger
         /// <returns>Modified string</returns>
         private static string CapPath(this string st)
         {
-            if (st[st.Length - 1] == System.IO.Path.DirectorySeparatorChar)
-                return st;
-            return st + System.IO.Path.DirectorySeparatorChar;
+            if (st[st.Length - 1] == System.IO.Path.DirectorySeparatorChar) //If the last character is a \
+                return st;                                                  //return the original string
+            return st + System.IO.Path.DirectorySeparatorChar;              //return a string with the \ added to the end.
         }
 #endregion
     }
 
     public class FileTree
     {
+        /// <summary>
+        /// Full path to directory
+        /// </summary>
         public string Path { get; set; }
+        /// <summary>
+        /// Directory name
+        /// </summary>
         public string Directory { get; set; }
+        /// <summary>
+        /// Sub directories
+        /// </summary>
         public List<FileTree> Directories { get; set; } = new List<FileTree>();
+        /// <summary>
+        /// Files in directory
+        /// </summary>
         public List<string> Files { get; set; } = new List<string>();
+        /// <summary>
+        /// If this path is over the 260 limit.
+        /// </summary>
         public bool AtLimit { get; set; } = false;
     }
 }
