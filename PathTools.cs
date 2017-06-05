@@ -34,6 +34,9 @@ namespace FilePathDelonger
         /// </summary>
         public Action<object, EventArgs> FixEnd { get; set; }
 
+        private int _count = 0;
+        private List<string> _cutpoint = new List<string>();
+
         /// <summary>
         /// Build a FileTree from the selected location.
         /// </summary>
@@ -68,6 +71,66 @@ namespace FilePathDelonger
 
             return DirectoryTree;                                       //Return new FileTree
         }
+        /// <summary>
+        /// Generate a TreeData object that holds the root FileTree, directory count, and location that need to be moved.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="pathto"></param>
+        /// <returns></returns>
+        public TreeData ParsePath(string path, string pathto)
+        {
+            TreeData treedata = new TreeData();
+            treedata.FileTree = BuildTree(path, pathto, "");
+            treedata.Count = _count;
+            treedata.PathBreakPoints = _cutpoint.ToArray();
+            return treedata;
+        }
+        /// <summary>
+        /// Build a FileTree from the selected location.
+        /// </summary>
+        /// <param name="path">Path to start with</param>
+        /// <returns>FileTree</returns>
+        private FileTree BuildTree(string path, string pathto, string lastcut)
+        {
+            ScanStarted?.Invoke(this, new EventArgs());
+
+            int charlimit = 240 - pathto.Length;                        //maximum path size.
+            string lc = lastcut;                                        //last place that was over the limit
+            _count++;
+
+            FileTree DirectoryTree = new FileTree();                    //Create a tree to hold data
+            string[] dir = GetFolders(path);                            //Subfolder paths
+            DirectoryTree.Files.AddRange(Directory.GetFiles(path));     //Get child files             
+            DirectoryTree.Path = path.CapPath();                        //Set Path in FileTree object
+            DirectoryTree.Directory = Path.GetFileName(path);           //Set directory name.
+
+            if(CheckPathLength(path, pathto, lastcut))                  //Check to see if it's over the limit and adjust
+            {
+                lc = path;                                              //Set lastcut to current path.
+                _cutpoint.Add(path);                                    //Add path to cut list.
+            }
+
+            foreach (string d in dir)                                   //Scan child directories
+            {
+                FileTree subtree = BuildTree(d, pathto, lc);            //Create a new FileTree from the sub directory information.
+                if (subtree != null)                                    //Ensure that it was able to.
+                    DirectoryTree.Directories.Add(subtree);             //Add subtree to the main FileTree Directories property.
+            }
+            ScanEnded?.Invoke(this, new EventArgs());                   //The file tree scan has ended.
+
+            return DirectoryTree;                                       //Return new FileTree
+        }
+
+        public void MoveFiles(TreeData td, string dest)
+        {
+            foreach (string s in td.PathBreakPoints)
+            {
+                Move(s, dest);
+                (Path.GetFileName(s) + " has been moved from " + s + " to the backup destiontion " + dest).LogMove(dest);
+            }
+
+        }
+
         /// <summary>
         /// Sets AtLimit bool in FileTree object
         /// </summary>
@@ -129,5 +192,55 @@ namespace FilePathDelonger
             Directory.Move(inputpath, outputpath.CapPath() + cpobj);                                    //Move the file/folder to the specified location
             (cpobj + " was moved from " + movefrom).LogMove(outputpath.CapPath() + "FolderLog.txt");    //Log the move 
         }
+        /// <summary>
+        /// Check the path length
+        /// </summary>
+        /// <param name="ipath">input path</param>
+        /// <param name="opath">output path</param>
+        /// <param name="lastpathlength">last length a cut was taken.</param>
+        /// <returns>Is it over length</returns>
+        private bool CheckPathLength (string ipath, string opath, string lastpathlength)
+        {
+            return (opath.Length - ipath.Length - lastpathlength.Length) > 240 ? true : false;
+        }
+        /// <summary>
+        /// Get files safely
+        /// </summary>
+        /// <param name="path">Path to get files from</param>
+        /// <returns>files</returns>
+        private string[] GetFiles(string path)
+        {
+            try
+            {
+                return Directory.GetFiles(path); //Get child files  
+            }
+            catch (UnauthorizedAccessException uae)
+            {
+                return null;                    //If not possible return null.
+            }
+        }
+        /// <summary>
+        /// Get directories safely.
+        /// </summary>
+        /// <param name="path">path to directory</param>
+        /// <returns>directories</returns>
+        private string[] GetFolders(string path)
+        {
+            try
+            {
+                return Directory.GetDirectories(path);                   //Get child folders         
+            }
+            catch (UnauthorizedAccessException uae)
+            {
+                return null;                                            //If not possible return null.
+            }
+        }
+    }
+
+    public class TreeData
+    {
+        public FileTree FileTree { get; set; }
+        public int Count { get; set; }
+        public string[] PathBreakPoints { get; set; }
     }
 }
