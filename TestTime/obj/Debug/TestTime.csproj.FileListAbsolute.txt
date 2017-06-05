@@ -1,0 +1,10 @@
+C:\Users\allen\Desktop\FilePathDelonger\TestTime\obj\Debug\TestTime.csprojResolveAssemblyReference.cache
+C:\Users\allen\Desktop\FilePathDelonger\TestTime\bin\Debug\TestTime.exe.config
+C:\Users\allen\Desktop\FilePathDelonger\TestTime\bin\Debug\TestTime.exe
+C:\Users\allen\Desktop\FilePathDelonger\TestTime\bin\Debug\TestTime.pdb
+C:\Users\allen\Desktop\FilePathDelonger\TestTime\bin\Debug\Delimon.Win32.IO.dll
+C:\Users\allen\Desktop\FilePathDelonger\TestTime\bin\Debug\FilenameDelonger.exe
+C:\Users\allen\Desktop\FilePathDelonger\TestTime\bin\Debug\FilenameDelonger.pdb
+C:\Users\allen\Desktop\FilePathDelonger\TestTime\bin\Debug\FilenameDelonger.exe.config
+C:\Users\allen\Desktop\FilePathDelonger\TestTime\obj\Debug\TestTime.exe
+C:\Users\allen\Desktop\FilePathDelonger\TestTime\obj\Debug\TestTime.pdb

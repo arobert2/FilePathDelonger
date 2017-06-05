@@ -1,0 +1,15 @@
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\FilenameDelonger.csprojResolveAssemblyReference.cache
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\MainWindow.g.cs
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\App.g.cs
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\FilenameDelonger_MarkupCompile.cache
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\FilenameDelonger_MarkupCompile.lref
+C:\Users\allen\Desktop\FilePathDelonger\bin\Debug\FilenameDelonger.exe.config
+C:\Users\allen\Desktop\FilePathDelonger\bin\Debug\FilenameDelonger.exe
+C:\Users\allen\Desktop\FilePathDelonger\bin\Debug\FilenameDelonger.pdb
+C:\Users\allen\Desktop\FilePathDelonger\bin\Debug\Delimon.Win32.IO.dll
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\MainWindow.baml
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\FilenameDelonger.g.resources
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\FilenameDelonger.Properties.Resources.resources
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\FilenameDelonger.csproj.GenerateResource.Cache
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\FilenameDelonger.exe
+C:\Users\allen\Desktop\FilePathDelonger\obj\Debug\FilenameDelonger.pdb
