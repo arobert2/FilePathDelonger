@@ -27,7 +27,14 @@ namespace FilePathDelonger
         {
             InitializeComponent();
         }
-#region WPF Events
+
+        #region PathTools events
+
+
+
+        #endregion
+
+        #region WPF Events
         // FolderScan gets focus
         private void FolderScan_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -82,25 +89,17 @@ namespace FilePathDelonger
             Application.Current.Shutdown();
         }
         // Fix button is clicked.
-        private void FixButton_Click(object sender, RoutedEventArgs e)
+        private async void FixButton_Click(object sender, RoutedEventArgs e)
         {
             if (Directory.Exists(FolderScan.Text))
             {
                 if (Directory.Exists(Output.Text))
                 {
-                    FileTree tree = new FileTree();  //FileTree
-                    Task.Run(() => { tree = PathTools.BuildTree(FolderScan.Text); });   //Build the tree
-                    Task.Run(() => { tree = PathTools.MarkCuts(tree, Output.Text, ""); });  //Mark cuts
-                    Task.Run(() => { PathTools.MoveFiles(tree, Output.Text); });    //move files
                     
-
-                    /*
-                    //Build the file tree
-                    FileTree ft = PathTools.BuildTree(FolderScan.Text);
-                    //Check for length and mark as needed
-                    ft = PathTools.MarkCuts(ft, Output.Text, "");
-                    //Move files that are marked.
-                    PathTools.MoveFiles(ft);*/
+                    FileTree tree = new FileTree();  //FileTree
+                    await Task.Run(() => { tree = PathTools.BuildTree(FolderScan.Text); });   //Build the tree
+                    await Task.Run(() => { tree = PathTools.MarkCuts(tree, Output.Text, ""); });  //Mark cuts
+                    await Task.Run(() => { PathTools.MoveFiles(tree, Output.Text); });    //move files
                 }
                 else
                     MessageBox.Show("Path " + Output.Text + " does not exist.", "Folder not found!", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -118,6 +117,6 @@ namespace FilePathDelonger
                 "This program is designed to move files and folders that exceed the Windows Explorer character limit to a specified location." +
                 "Paths that exceed this limit became very hard to back up and restore, and bypassing the path limit can cause OS instability.");
         }
+        #endregion
     }
-    #endregion
 }
