@@ -21,7 +21,7 @@ namespace FilePathDelonger
     /// </summary>
     public partial class MainWindow : Window
     {
-        PathTools PathTools = new PathTools();   //PathTools
+      PathTools PathTools = new PathTools();   //PathTools
 
         public MainWindow()
         {

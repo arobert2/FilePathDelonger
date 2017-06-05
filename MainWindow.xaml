@@ -5,36 +5,49 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FilePathDelonger"
         mc:Ignorable="d"
-        Title="MainWindow" Height="161" Width="525" ResizeMode="CanMinimize">
-    <Grid Margin="10,10,10,10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="400" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        Title="MainWindow" Height="188.297" Width="525" ResizeMode="CanMinimize">
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
-            <RowDefinition Height="20" />
-            <RowDefinition Height="20" />
-            <RowDefinition Height="20" />
+            <RowDefinition Height="120"/>
             <RowDefinition Height="20" />
         </Grid.RowDefinitions>
-        <TextBox Name="FolderScan" Grid.Column="0" Grid.Row="0" GotFocus="FolderScan_GotFocus" LostFocus="FolderScan_LostFocus" Text="Select a folder to fix." FontStyle="Italic" Foreground="Gray" />
-        <TextBox Name="Output" Grid.Column="0" Grid.Row="2" GotFocus="FolderScan_GotFocus" LostFocus="Output_LostFocus"  Text="Select an output location." FontStyle="Italic" Foreground="Gray" />
-        <Button Name="BrowseScan" Grid.Column="1" Grid.Row="0" Content="Browse" Click="BrowseScan_Click"/>
-        <Button Name="BrowseOutput" Grid.Column="1" Grid.Row="2" Content="Browse" Click="BrowseOutput_Click"/>
-        <Button Name="FixButton" Grid.Column="1" Grid.Row="4" Content="Fix" Click="FixButton_Click"/>
-        <Grid Grid.Column="0" Grid.Row="4">
+        <Grid Margin="10,10,10,0" DockPanel.Dock="Top" Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="125" />
-                <ColumnDefinition Width="10" />
-                <ColumnDefinition Width="125" />
+                <ColumnDefinition Width="400" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="20"/>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
             </Grid.RowDefinitions>
-            <Button Name="bttnAbout" Content="About" Grid.Column="0" Click="bttnAbout_Click" />
-            <Button Name="bttnQuit" Content="Quit" Grid.Column="2" Click="bttnQuit_Click" />
+            <TextBox Name="FolderScan" Grid.Column="0" Grid.Row="0" GotFocus="FolderScan_GotFocus" LostFocus="FolderScan_LostFocus" Text="Select a folder to fix." FontStyle="Italic" Foreground="Gray" />
+            <TextBox Name="Output" Grid.Column="0" Grid.Row="2" GotFocus="FolderScan_GotFocus" LostFocus="Output_LostFocus"  Text="Select an output location." FontStyle="Italic" Foreground="Gray" />
+            <Button Name="BrowseScan" Grid.Column="1" Grid.Row="0" Content="Browse" Click="BrowseScan_Click"/>
+            <Button Name="BrowseOutput" Grid.Column="1" Grid.Row="2" Content="Browse" Click="BrowseOutput_Click"/>
+            <Button Name="FixButton" Grid.Column="1" Grid.Row="4" Content="Fix" Click="FixButton_Click"/>
+            <Grid Grid.Column="0" Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="125" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="125" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                </Grid.RowDefinitions>
+                <Button Name="bttnAbout" Content="About" Grid.Column="0" Click="bttnAbout_Click" />
+                <Button Name="bttnQuit" Content="Quit" Grid.Column="2" Click="bttnQuit_Click" />
+            </Grid>
         </Grid>
+        <StatusBar DockPanel.Dock="Bottom" Grid.Row="1" Margin="0,1,0,-7">
+            <TextBlock Name="StatusText" Width="100" />
+            <Separator />
+            <ProgressBar Name="Progressbar" Height="20" Width="300" />
+            <Separator />
+            <TextBlock Name="PercentText" />
+        </StatusBar>
     </Grid>
 </Window>
