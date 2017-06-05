@@ -43,9 +43,9 @@
             </Grid>
         </Grid>
         <StatusBar DockPanel.Dock="Bottom" Grid.Row="1" Margin="0,1,0,-7">
-            <TextBlock Name="StatusText" Width="100" />
+            <TextBlock Name="StatusText" Width="125" />
             <Separator />
-            <ProgressBar Name="Progressbar" Height="20" Width="300" />
+            <ProgressBar Name="Progressbar" Height="20" Width="309" />
             <Separator />
             <TextBlock Name="PercentText" />
         </StatusBar>
