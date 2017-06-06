@@ -168,8 +168,11 @@ namespace FilePathDelonger
             if (!CheckPath())
                 return;
 
-            await Task.Run(() => { TreeData = PathTools.ParsePath(FolderScan.Text, Output.Text); });
-            await Task.Run(() => { PathTools.CopyFiles(TreeData, Output.Text); });
+            await Task.Run(() => {
+                PathTools PathTools = new PathTools();
+                TreeData = PathTools.ParsePath(FolderScan.Text, Output.Text);
+            });
+            await Task.Run(() => PathTools.CopyFiles(TreeData, Output.Text));
 
         }
         #endregion
@@ -179,16 +182,16 @@ namespace FilePathDelonger
         /// <returns></returns>
         private bool CheckPath()
         {
-            bool r = false;
-            if (Directory.Exists(FolderScan.Text))
+            bool r = true;
+            if (!Directory.Exists(FolderScan.Text))
             {
                 MessageBox.Show("Path " + FolderScan.Text + " does not exist.", "Folder not found!", MessageBoxButton.OK, MessageBoxImage.Error);
-                r = true;
+                r = false;
             }
             if (!Directory.Exists(Output.Text))
             {
                 MessageBox.Show("Path " + Output.Text + " does not exist.", "Folder not found!", MessageBoxButton.OK, MessageBoxImage.Error);
-                r = true;
+                r = false;
             }
             return r;
         }
