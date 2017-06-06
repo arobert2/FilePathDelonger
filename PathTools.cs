@@ -50,6 +50,7 @@ namespace FilePathDelonger
         /// </summary>
         /// <param name="path">Path to start with</param>
         /// <returns>FileTree</returns>
+        [Obsolete("BuildTree(string path) is deprecated, please use ParsePath(string path, string pathto)")]
         public FileTree BuildTree(string path)
         {
             FileTree DirectoryTree = new FileTree();                    //Create a tree to hold data
@@ -123,7 +124,7 @@ namespace FilePathDelonger
             return DirectoryTree;                                       //Return new FileTree
         }
         /// <summary>
-        /// Move files files
+        /// Move branches of file tree to destination.
         /// </summary>
         /// <param name="td"></param>
         /// <param name="dest"></param>
@@ -144,6 +145,7 @@ namespace FilePathDelonger
         /// </summary>
         /// <param name="ft">FileTree</param>
         /// <param name="path">Path to check</param>
+        [Obsolete("MarkCuts(FileTree ft, string pathto, string lastcut) is deprecated. This function has been rolled into PrasePath(string path, string pathto)")]
         public FileTree MarkCuts(FileTree ft, string pathto, string lastcut)
         {
             int charlimit = 240 - pathto.Length;                    //maximum path size.
@@ -170,6 +172,7 @@ namespace FilePathDelonger
         /// </summary>
         /// <param name="ft">Root FileTree</param>
         /// <param name="path">Path to move files to.</param>
+        [Obsolete("MoveFiles(FileTree ft, string path) is deprecated, use MoveFiles(TreeData td, string dest")]
         public void MoveFiles(FileTree ft, string path)
         {
             foreach (FileTree f in ft.Directories)      //Go to end of branch before continuing.

@@ -32,6 +32,7 @@ namespace FilePathDelonger
             PathTools.ScanStarted = ScanStartedEvent;
             PathTools.ScanEnded = ScanEndedEvent;
             PathTools.ContentMoved = ContentMovedEvent;
+            PathTools.ContentCopied = ContentCopiedEvent;
         }
 
         #region PathTools events
@@ -133,7 +134,7 @@ namespace FilePathDelonger
         {
             Application.Current.Shutdown();
         }
-        // Fix button is clicked.
+        // Move button is clicked.
         private async void FixButton_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult mbr = MessageBox.Show("Moving files could leave to data loss!", "Warning!", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
@@ -141,22 +142,11 @@ namespace FilePathDelonger
             if (mbr == MessageBoxResult.Cancel)
                 return;
 
-            if (Directory.Exists(FolderScan.Text))
-            {
-                if (Directory.Exists(Output.Text))
-                {
+            if (!CheckPath())
+                return;
                     
-                    FileTree tree = new FileTree();  //FileTree
-                    await Task.Run(() => { tree = PathTools.BuildTree(FolderScan.Text); });   //Build the tree
-                    await Task.Run(() => { tree = PathTools.MarkCuts(tree, Output.Text, ""); });  //Mark cuts
-                    await Task.Run(() => { PathTools.MoveFiles(tree, Output.Text); });    //move files
-                }
-                else
-                    MessageBox.Show("Path " + Output.Text + " does not exist.", "Folder not found!", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-                MessageBox.Show("Path " + FolderScan.Text + " does not exist.", "Folder not found!", MessageBoxButton.OK, MessageBoxImage.Error);
-                
+            await Task.Run(() => { TreeData = PathTools.ParsePath(FolderScan.Text, Output.Text); });   //Build the tree
+            await Task.Run(() => { PathTools.MoveFiles(TreeData, Output.Text); });    //move files
         }
         // About button is clicked.
         private void bttnAbout_Click(object sender, RoutedEventArgs e)
@@ -167,14 +157,40 @@ namespace FilePathDelonger
                 "This program is designed to move files and folders that exceed the Windows Explorer character limit to a specified location." +
                 "Paths that exceed this limit became very hard to back up and restore, and bypassing the path limit can cause OS instability.");
         }
-
-        private void Copy_Click(object sender, RoutedEventArgs e)
+        // Copy button clicked
+        private async void Copy_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult mbr = MessageBox.Show("You are about to copy damaged file trees to a new destination. Do you wish to continue?", "Fix File Tree?", MessageBoxButton.OKCancel);
 
             if (mbr == MessageBoxResult.Cancel)
                 return;
+
+            if (!CheckPath())
+                return;
+
+            await Task.Run(() => { TreeData = PathTools.ParsePath(FolderScan.Text, Output.Text); });
+            await Task.Run(() => { PathTools.CopyFiles(TreeData, Output.Text); });
+
         }
         #endregion
+        /// <summary>
+        /// Checks the path.
+        /// </summary>
+        /// <returns></returns>
+        private bool CheckPath()
+        {
+            bool r = false;
+            if (Directory.Exists(FolderScan.Text))
+            {
+                MessageBox.Show("Path " + FolderScan.Text + " does not exist.", "Folder not found!", MessageBoxButton.OK, MessageBoxImage.Error);
+                r = true;
+            }
+            if (!Directory.Exists(Output.Text))
+            {
+                MessageBox.Show("Path " + Output.Text + " does not exist.", "Folder not found!", MessageBoxButton.OK, MessageBoxImage.Error);
+                r = true;
+            }
+            return r;
+        }
     }
 }
