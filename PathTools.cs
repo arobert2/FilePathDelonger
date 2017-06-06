@@ -33,9 +33,17 @@ namespace FilePathDelonger
         /// Signals the files have finished being copied or moved.
         /// </summary>
         public Action<object, EventArgs> FixEnd { get; set; }
+        /// <summary>
+        /// Signals a folder and it's contents were moved.
+        /// </summary>
+        public Action<object, EventArgs> ContentMoved { get; set; }
+        /// <summary>
+        /// Signals a folder and it's contents were copied.
+        /// </summary>
+        public Action<object, EventArgs> ContentCopied { get; set; }
 
         private int _count = 0;
-        private List<string> _cutpoint = new List<string>();
+        private List<FileTree> _cutpoint = new List<FileTree>();
 
         /// <summary>
         /// Build a FileTree from the selected location.
@@ -44,8 +52,6 @@ namespace FilePathDelonger
         /// <returns>FileTree</returns>
         public FileTree BuildTree(string path)
         {
-            ScanStarted?.Invoke(this, new EventArgs());
-
             FileTree DirectoryTree = new FileTree();                    //Create a tree to hold data
             string[] dir;                                               //Subfolder paths
             //Ignore access denied folders.
@@ -67,8 +73,6 @@ namespace FilePathDelonger
                 if (subtree != null)                                    //Ensure that it was able to.
                     DirectoryTree.Directories.Add(subtree);             //Add subtree to the main FileTree Directories property.
             }
-            ScanEnded?.Invoke(this, new EventArgs());                   //The file tree scan has ended.
-
             return DirectoryTree;                                       //Return new FileTree
         }
         /// <summary>
@@ -79,10 +83,12 @@ namespace FilePathDelonger
         /// <returns></returns>
         public TreeData ParsePath(string path, string pathto)
         {
+            ScanStarted?.Invoke(this, new EventArgs());
             TreeData treedata = new TreeData();
             treedata.FileTree = BuildTree(path, pathto, "");
             treedata.Count = _count;
             treedata.PathBreakPoints = _cutpoint.ToArray();
+            ScanEnded?.Invoke(this, new EventArgs());
             return treedata;
         }
         /// <summary>
@@ -92,8 +98,6 @@ namespace FilePathDelonger
         /// <returns>FileTree</returns>
         private FileTree BuildTree(string path, string pathto, string lastcut)
         {
-            ScanStarted?.Invoke(this, new EventArgs());
-
             int charlimit = 240 - pathto.Length;                        //maximum path size.
             string lc = lastcut;                                        //last place that was over the limit
             _count++;
@@ -107,7 +111,7 @@ namespace FilePathDelonger
             if(CheckPathLength(path, pathto, lastcut))                  //Check to see if it's over the limit and adjust
             {
                 lc = path;                                              //Set lastcut to current path.
-                _cutpoint.Add(path);                                    //Add path to cut list.
+                _cutpoint.Add(DirectoryTree);                           //Add path to cut list.
             }
 
             foreach (string d in dir)                                   //Scan child directories
@@ -116,21 +120,25 @@ namespace FilePathDelonger
                 if (subtree != null)                                    //Ensure that it was able to.
                     DirectoryTree.Directories.Add(subtree);             //Add subtree to the main FileTree Directories property.
             }
-            ScanEnded?.Invoke(this, new EventArgs());                   //The file tree scan has ended.
-
             return DirectoryTree;                                       //Return new FileTree
         }
-
+        /// <summary>
+        /// Move files files
+        /// </summary>
+        /// <param name="td"></param>
+        /// <param name="dest"></param>
         public void MoveFiles(TreeData td, string dest)
         {
-            foreach (string s in td.PathBreakPoints)
+            FixStart?.Invoke(this, new EventArgs());
+            for (int i = td.PathBreakPoints.Length; i > 0; i-- )                            //Count backwards so you don't move folders before they are scheduled.
             {
-                Move(s, dest);
-                (Path.GetFileName(s) + " has been moved from " + s + " to the backup destiontion " + dest).LogMove(dest);
+                ContentMoved?.Invoke(this, new EventArgs());
+                Move(td.PathBreakPoints[i].Path, dest);                                          //call the move function
+                //log to destination\FolderLog.txt
+                (Path.GetFileName(td.PathBreakPoints[i].Path) + " has been moved from " + td.PathBreakPoints[i] + " to the backup destiontion " + dest).LogMove(dest.CapPath() + Path.GetFileName(td.PathBreakPoints[i].Path)); 
             }
-
+            FixStart?.Invoke(this, new EventArgs());
         }
-
         /// <summary>
         /// Sets AtLimit bool in FileTree object
         /// </summary>
@@ -138,7 +146,6 @@ namespace FilePathDelonger
         /// <param name="path">Path to check</param>
         public FileTree MarkCuts(FileTree ft, string pathto, string lastcut)
         {
-            PathCheckStarted?.Invoke(this, new EventArgs());        //The path check started.
             int charlimit = 240 - pathto.Length;                    //maximum path size.
             string lc = lastcut;                                    //Last cut for determining where to cut nust (path length - lastcutlength - destinationlength = maximum path size)
             FileTree newTree = new FileTree()                       //Create a new tree that is identical to the previous except no child directores.
@@ -156,7 +163,6 @@ namespace FilePathDelonger
             //Check sub directories for cut mark.
             foreach (FileTree f in ft.Directories)
                 newTree.Directories.Add(MarkCuts(f, pathto, lc));   //Run method against subtrees, add result to newTree sub directory (FileTree.Directories property)            
-            PathCheckEnded?.Invoke(this, new EventArgs());        //The path check ended.
             return newTree;                                         //return updated tree.
         }
         /// <summary>
@@ -166,7 +172,6 @@ namespace FilePathDelonger
         /// <param name="path">Path to move files to.</param>
         public void MoveFiles(FileTree ft, string path)
         {
-            FixStart?.Invoke(this, new EventArgs());    //FixStart started
             foreach (FileTree f in ft.Directories)      //Go to end of branch before continuing.
                 MoveFiles(f, path);                     //restart loop
 
@@ -176,7 +181,41 @@ namespace FilePathDelonger
 
             if (ft.AtLimit)                             //If marked for cut
                 Move(ft.Path, path);                    //Move folder 
-            FixEnd?.Invoke(this, new EventArgs());      //Fix ended
+        }
+        /// <summary>
+        /// Copy the files from the File Tree that are over the limit to a specific location
+        /// </summary>
+        /// <param name="td">TreeData containing the FileTree, count, and breakpoints.</param>
+        /// <param name="outpath">Path to send files.</param>
+        public void CopyFiles(TreeData td, string outpath)
+        {
+            FixStart?.Invoke(this, new EventArgs());
+            CopySection(td.FileTree, outpath);
+            foreach (FileTree path in td.PathBreakPoints)
+                CopySection(path, outpath);
+            FixEnd?.Invoke(this, new EventArgs());
+        }
+        /// <summary>
+        /// Copy the data between 2 points marked over the limit.
+        /// </summary>
+        /// <param name="ft">FileTree to start with</param>
+        /// <param name="outpath">output path</param>
+        private void CopySection(FileTree ft, string outpath)
+        {
+            ContentCopied?.Invoke(this, new EventArgs());
+            string op = outpath.CapPath() + ft.Directory;           //Where these files will go
+
+            if (!Directory.Exists(op))                              //If directory at outpath doesn't exist
+                Directory.CreateDirectory(op);                      //Create directory
+            else
+                Directory.CreateDirectory(op.AppendTimeStamp());    //Otherwise create directory with timestamp.
+
+            foreach (string file in ft.Files)                       //Copy every file but do not overwrite.
+                File.Copy(file, outpath, false);
+
+            foreach (FileTree subdir in ft.Directories)             //Continue this until the next folder is marked to cut as well.
+                if (!subdir.AtLimit)
+                    CopySection(subdir, op);
         }
         /// <summary>
         /// Move a file or folder from one location to another without worrying about overwrite.
@@ -241,6 +280,6 @@ namespace FilePathDelonger
     {
         public FileTree FileTree { get; set; }
         public int Count { get; set; }
-        public string[] PathBreakPoints { get; set; }
+        public FileTree[] PathBreakPoints { get; set; }
     }
 }

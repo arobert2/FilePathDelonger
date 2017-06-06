@@ -90,6 +90,25 @@ namespace FilePathDelonger
                 sw.Close();                                                             //Close file
             }
         }
+        /// <summary>
+        /// Find a FileTree in the tree that matches the path.
+        /// </summary>
+        /// <param name="ft">FileTree to search</param>
+        /// <param name="path">path to search for</param>
+        /// <returns>FileTree that matches the path</returns>
+        public static FileTree Find(this FileTree ft, string path)
+        {
+            if (ft.Path == path.CapPath())
+                return ft;
+            else
+                foreach (FileTree filetree in ft.Directories)
+                { 
+                    FileTree rpath = Find(filetree, path);
+                    if (!(rpath == null))
+                        return rpath;
+                }
+            return null;
+        }
     }
 
     public class FileTree
