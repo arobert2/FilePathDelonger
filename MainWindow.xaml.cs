@@ -145,7 +145,10 @@ namespace FilePathDelonger
             if (!CheckPath())
                 return;
                     
-            await Task.Run(() => { TreeData = PathTools.ParsePath(FolderScan.Text, Output.Text); });   //Build the tree
+            TreeData = await Task.Run(() => { 
+                PathTools PathTools = new PathTools();
+                return PathTools.ParsePath(FolderScan.Text, Output.Text); 
+            });   //Build the tree
             await Task.Run(() => { PathTools.MoveFiles(TreeData, Output.Text); });    //move files
         }
         // About button is clicked.
@@ -168,9 +171,9 @@ namespace FilePathDelonger
             if (!CheckPath())
                 return;
 
-            await Task.Run(() => {
+            TreeData = await Task.Run(() => {
                 PathTools PathTools = new PathTools();
-                TreeData = PathTools.ParsePath(FolderScan.Text, Output.Text);
+                return PathTools.ParsePath(FolderScan.Text, Output.Text);
             });
             await Task.Run(() => PathTools.CopyFiles(TreeData, Output.Text));
 
