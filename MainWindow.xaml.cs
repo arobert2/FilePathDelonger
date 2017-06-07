@@ -39,43 +39,60 @@ namespace FilePathDelonger
 
         public void ScanStartedEvent(object o, EventArgs args)
         {
-            StatusText.Text = "Scan Started";
-            Progressbar.IsIndeterminate = true;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                StatusText.Text = "Scan Started";
+                Progressbar.IsIndeterminate = true;
+            });
         }
 
         public void ScanEndedEvent(object o, EventArgs args)
         {
-            Progressbar.IsIndeterminate = false;
-            StatusText.Text = "Scan Ended";
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Progressbar.IsIndeterminate = false;
+                StatusText.Text = "Scan Ended";
+            });
         }
 
         public void FixStartedEvent(object o, EventArgs args)
         {
-            Progressbar.Maximum = TreeData.Count;
-            Progressbar.Value = 0;
-            StatusText.Text = "Fixing Files";
-            PercentText.Text = "0";
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Progressbar.Maximum = TreeData.Count;
+                StatusText.Text = "Fixing Files";
+                PercentText.Text = "0";
+            });
         }
 
         public void FixEndedEvent(object o, EventArgs args)
         {
-            StatusText.Text = "Done!";
-            Progressbar.Value = 0;
-            PercentText.Text = "0";
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                StatusText.Text = "Done!";
+                Progressbar.Value = 0;
+                PercentText.Text = "0";
+            });
         }
 
         public void ContentMovedEvent(object o, EventArgs args)
         {
-            Progressbar.Value++;
-            int diff = (int)(Progressbar.Value / TreeData.PathBreakPoints.Length);
-            PercentText.Text = diff.ToString();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Progressbar.Value++;
+                int diff = (int)(Progressbar.Value / TreeData.PathBreakPoints.Length);
+                PercentText.Text = diff.ToString();
+            });
         }
 
         public void ContentCopiedEvent(object o, EventArgs args)
         {
-            Progressbar.Value++;
-            int diff = (int)(Progressbar.Value / TreeData.Count);
-            PercentText.Text = diff.ToString();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                Progressbar.Value++;
+                int diff = (int)(Progressbar.Value / TreeData.Count);
+                PercentText.Text = diff.ToString();
+            });
         }
 
         #endregion
@@ -170,12 +187,12 @@ namespace FilePathDelonger
 
             if (!CheckPath())
                 return;
-
+            string fs = FolderScan.Text, o = Output.Text;
             TreeData = await Task.Run(() => {
                 PathTools PathTools = new PathTools();
-                return PathTools.ParsePath(FolderScan.Text, Output.Text);
+                return PathTools.ParsePath(fs, o);
             });
-            await Task.Run(() => PathTools.CopyFiles(TreeData, Output.Text));
+            await Task.Run(() => PathTools.CopyFiles(TreeData, o));
 
         }
         #endregion
