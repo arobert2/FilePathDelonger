@@ -172,10 +172,11 @@ namespace FilePathDelonger
         private void bttnAbout_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Author: Allen Roberts\n\n" +
-                "WARNING! This program moves files from one path to another, it does not copy, It is possible for you" +
-                "to misplace files when this is run on a path. If you cannot find a file check the log files in the destination folder to see where it was moved.\n\n" +
-                "This program is designed to move files and folders that exceed the Windows Explorer character limit to a specified location." +
-                "Paths that exceed this limit became very hard to back up and restore, and bypassing the path limit can cause OS instability.");
+               "This program is designed to fix file paths that violate the MAX_PATH variable in windows." + 
+               "This program solved the MAX_PATH violation by copying or moving files and folders.\n\n" + 
+               "WARNING! The move function has a potential for data loss, use at your own risk.\n\n" + 
+               "COPY is for backing up or restoring files, it will copy all contents of the source to the destination.\n\n" +
+               "MOVE is designed to fix and leave in place. It only moves folders that violate MAX_PATH. (NOT RECOMMENDED)");
         }
         // Copy button clicked
         private async void Copy_Click(object sender, RoutedEventArgs e)
