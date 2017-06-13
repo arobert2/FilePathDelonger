@@ -1,5 +1,5 @@
 ﻿<img src="img/farnsworth.jpg">  
-Good news everyone, I've created an application that will fix data that's paths have exceeded the filepath limit. Behold the FilePathDelonger.
+Good news everyone, I've created an application that will fix data that's paths have exceeded the filepath limit. Behold the FilePathDelonger.  
  
  WARNING! Only use this on user created content.
 
