@@ -10,7 +10,7 @@ This program uses Delimon.Win32.IO in order to read and move files that have exc
 
 ## Download
 
-<a href="Release/Release.zip">Download the application</a>
+<a href="https://github.com/arobert2/FilePathDelonger/raw/master/Release/Release.zip">Download the application</a>
 
 ## Usage
 
