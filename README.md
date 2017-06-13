@@ -12,6 +12,6 @@ This program uses Delimon.Win32.IO in order to read and move files that have exc
 Once compiled the program is simple to use.
 
 1. Browse to the folder you want to fix
-2. Browse to the folder you want the files to be output folders that exceed MAX_PATH
-3. Click copy to copy the entire directory and fix it to the location or Click move to move any folder that exceeds the limit to the output folder.
+2. Browse to the folder you want to output to.
+3. Click copy to copy the entire directory and fix it, or click move to move any folder that exceeds the limit to the output folder.
 
