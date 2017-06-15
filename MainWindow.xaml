@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FilePathDelonger"
         mc:Ignorable="d"
-        Title="MainWindow" Height="188.297" Width="525" ResizeMode="CanMinimize">
+        Title="Long Path Fix" Height="188.297" Width="525" ResizeMode="CanMinimize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="120"/>

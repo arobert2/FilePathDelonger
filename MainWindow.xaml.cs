@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace FilePathDelonger
-{
+{ 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -181,13 +181,14 @@ namespace FilePathDelonger
         // Copy button clicked
         private async void Copy_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult mbr = MessageBox.Show("You are about to copy damaged file trees to a new destination. Do you wish to continue?", "Fix File Tree?", MessageBoxButton.OKCancel);
+            MessageBoxResult mbr = MessageBox.Show("Copy contents to output folder?", "Fix File Tree?", MessageBoxButton.OKCancel);
 
             if (mbr == MessageBoxResult.Cancel)
                 return;
 
             if (!CheckPath())
                 return;
+
             string fs = FolderScan.Text, o = Output.Text;
             TreeData = await Task.Run(() => {
                 PathTools PathTools = new PathTools();
